@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Cycle Rocks!</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Full Cycle Rocks!</h1>
+        <div class="people">
+            <h1>Lista de nomes cadastrada no banco de dados</h1>
+            <div id="people-list">
+                
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    function createNode(element) {
+        return document.createElement(element);
+    }
+
+    function append(parent, el) {
+        return parent.appendChild(el);
+    }
+
+    const ul = document.getElementById('people-list');
+
+    fetch('http://localhost:8080/people')
+    .then((resp) => resp.json())
+    .then(function(data) {
+        let users = data;
+        return users.map(function(people) {
+            let li = createNode('li');
+            let span = createNode('span');
+            span.innerHTML = `${people.name} id: ${people.id}`;
+            append(li, span);
+            append(ul, li);
+        })
+    })
+    .catch(function(error) {
+        console.log(error);
+    });
+</script>
+
+</html>

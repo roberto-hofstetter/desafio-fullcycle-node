@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+    db:
+        image: mysql:5.7
+        command: --innodb-use-native-aio=0
+        container_name: db
+        restart: always
+        tty: true
+        volumes: 
+            - ./mysql:/var/lib/mysql
+        environment: 
+            - MYSQL_DATABASE=nodedb
+            - MYSQL_ROOT_PASSWORD=root
+        networks: 
+            - example-net
+        healthcheck:
+            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+            timeout: 20s
+            retries: 10
+
+    node:
+        build:
+          context: ./node
+        container_name: node
+        hostname: node
+        ports:
+            - "8888:8888" 
+        networks:
+            - example-net  
+        depends_on:
+            db:
+                condition: service_healthy
+    nginx:
+        build:
+          context: ./nginx
+        container_name: nginx
+        hostname: nginx
+        ports:
+            - "8080:80" 
+        depends_on:
+            - node            
+        networks:
+            - example-net
+
+networks:
+  example-net:
+    external: true
